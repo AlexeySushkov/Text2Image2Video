@@ -167,9 +167,9 @@ n8n Workflow (router + image/video pipelines)
 
 ### 1) Безопасность Storage
 
-- [ ] Проверить статус bucket `photos` (`public` true/false).
-- [ ] Переключить bucket `photos` в приватный режим (`public = false`).
-- [ ] Убрать любые публичные URL для файлов (если есть).
+- [x] Проверить статус bucket `photos` (`public` true/false).
+- [x] Переключить bucket `photos` в приватный режим (`public = false`).
+- [X] Убрать любые публичные URL для файлов (если есть).
 - [ ] Использовать только signed URL с коротким TTL (60-300 сек) для временного доступа.
 - [ ] Стандартизировать пути объектов: `photos/user_<telegram_id>/<timestamp>_<filename>`.
 
