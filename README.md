@@ -136,6 +136,81 @@ n8n Workflow (router + image/video pipelines)
 
 - `TELEGRAM_BOT_TOKEN` — используется узлом `Create main menu` для вызова `setMyCommands`.
 
+## Ключи и переменные
+
+### n8n Credentials
+
+- `Telegram Text2Image2Video` — Telegram Bot API token.
+- `OpenRouter for Image-Video Generator` — OpenRouter API key.
+- `Bearer Auth MinMax` — MiniMax API bearer token.
+- `Supabase for ImageVideoGenerator` — Supabase URL + API key (server-side).
+- `Header Auth for ImageVideoGenerator` — заголовки для Supabase Storage API.
+
+### ENV-переменные
+
+- `TELEGRAM_BOT_TOKEN` — токен Telegram бота.
+- `SUPABASE_URL` — URL проекта Supabase.
+- `SUPABASE_ANON_KEY` — только для публичных клиентских сценариев (если нужны).
+- `SUPABASE_SERVICE_ROLE_KEY` — только backend/n8n, никогда в клиенте.
+- `OPENROUTER_API_KEY` — ключ OpenRouter.
+- `MINIMAX_API_KEY` — ключ MiniMax.
+
+### Правила безопасности для ключей
+
+- Не хранить секреты в `README`, workflow JSON и исходном коде.
+- Использовать placeholders: `YOUR_SUPABASE_URL`, `YOUR_API_KEY`.
+- Добавить `.env*` в `.gitignore`.
+- Не отправлять ключи в Telegram, логи и тексты ошибок.
+- Делать ротацию ключей регулярно или при подозрении на утечку.
+
+## ToDo (Supabase: безопасность, очистка, оптимизация)
+
+### 1) Безопасность Storage
+
+- [ ] Проверить статус bucket `photos` (`public` true/false).
+- [ ] Переключить bucket `photos` в приватный режим (`public = false`).
+- [ ] Убрать любые публичные URL для файлов (если есть).
+- [ ] Использовать только signed URL с коротким TTL (60-300 сек) для временного доступа.
+- [ ] Стандартизировать пути объектов: `photos/user_<telegram_id>/<timestamp>_<filename>`.
+
+### 2) Политики доступа (RLS / Storage)
+
+- [ ] Включить/проверить RLS для `storage.objects`.
+- [ ] Добавить policy на `SELECT` только для файлов текущего пользователя.
+- [ ] Добавить policy на `INSERT` только в префикс текущего пользователя.
+- [ ] Добавить policy на `DELETE` только своих файлов.
+- [ ] Проверить, что workflow не позволяет читать/удалять чужие `image_name`.
+
+### 3) Ключи и секреты
+
+- [ ] Использовать `service_role` только в backend/n8n.
+- [ ] Не использовать `service_role` в клиенте/фронте/боте у пользователя.
+- [ ] Хранить ключи только в credentials/env (не в workflow JSON и не в git).
+- [ ] Ротация ключей раз в N месяцев или при подозрении на утечку.
+- [ ] Проверить, что в логах/ошибках не печатаются ключи.
+
+### 4) Очистка истории и Storage
+
+- [ ] Оставить soft-delete (`image_status = 'cleared'`) для UX.
+- [ ] Добавить hard-delete job (cron): удалять файлы из Storage для `cleared`.
+- [ ] Добавить TTL для старых записей (например 30 дней) и автоочистку.
+- [ ] После удаления файлов удалять строки из `ImageHistory`.
+- [ ] Добавить dry-run режим очистки для безопасного теста.
+
+### 5) Оптимизация БД
+
+- [ ] Проверить уникальный индекс `ImageUsers(telegram_id)`.
+- [ ] Добавить индекс `ImageHistory(user_id, image_status, created_at desc)`.
+- [ ] Ограничить число активных элементов контекста на пользователя (например 5-10).
+- [ ] Периодически архивировать/удалять старые `result`, если они не нужны.
+
+### 6) Наблюдаемость и контроль
+
+- [ ] Логировать размер загружаемых файлов и итоговый расход Storage.
+- [ ] Добавить алерт при резком росте Storage/числа объектов.
+- [ ] Добавить алерт при частых ошибках Supabase API.
+- [ ] Добавить дашборд: активные пользователи, число генераций, объем хранения.
+
 ## Установка и настройка
 
 1. Импортируйте в n8n файл `Generate Images Bot v9 + Video (poll mode) (1).json`.
