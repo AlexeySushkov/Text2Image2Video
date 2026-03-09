@@ -1,4 +1,4 @@
-# Generate Images Bot v9 + Video (poll mode)
+# Generate Images Bot v10 + Video (poll mode)
 
 Telegram-бот на n8n для генерации изображений и видео с хранением пользователей, контекста и результатов в Supabase.
 
@@ -12,6 +12,14 @@ n8n Workflow (router + image/video pipelines)
     ├─ MiniMax API (video generation, poll mode)
     └─ Supabase (Postgres + Storage)
 ```
+
+## Что нового в v10
+
+- Добавлен workflow-файл `Generate Images Bot v10 + Video (poll mode).json`.
+- Обновлена логика проверки типа генерации: в условии используется стабильный доступ
+  `$('Set User Params').first().json.tg.generation_type` (вместо `.item`).
+- Удален дублирующий Telegram-узел ошибки видео (`Error Video1`) для упрощения ветки ошибок.
+- Обновлены служебные идентификаторы и layout узлов после переэкспорта workflow из n8n.
 
 ## Что нового в v9
 
@@ -213,7 +221,7 @@ n8n Workflow (router + image/video pipelines)
 
 ## Установка и настройка
 
-1. Импортируйте в n8n файл `Generate Images Bot v9 + Video (poll mode) (1).json`.
+1. Импортируйте в n8n файл `Generate Images Bot v10 + Video (poll mode).json`.
 2. Создайте Telegram-бота через [@BotFather](https://t.me/BotFather).
 3. Создайте проект Supabase:
    - таблицы `ImageUsers` и `ImageHistory`,
@@ -230,7 +238,7 @@ n8n Workflow (router + image/video pipelines)
 - Для image-ответа в Telegram отправляется только первое изображение из массива ответа модели.
 - При `/clear_context` workflow очищает активные записи и возвращает модель `Fast`.
 - Для video используется polling-режим с паузой `30s` между запросами статуса.
-- В `v9 (poll mode)` для Storage-запросов используется `Header Auth for ImageVideoGenerator`; credential `VseLLM Images` может встречаться в экспорте как неактивный legacy-след.
+- В `v10 (poll mode)` для Storage-запросов используется `Header Auth for ImageVideoGenerator`; credential `VseLLM Images` может встречаться в экспорте как неактивный legacy-след.
 
 ## Статус
 
